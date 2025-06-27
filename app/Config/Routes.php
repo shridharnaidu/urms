@@ -1,0 +1,31 @@
+<?php
+
+use CodeIgniter\Router\RouteCollection;
+
+/**
+ * @var RouteCollection $routes
+ */
+$routes->get('/', 'Home::index');
+
+
+$routes->get('/login', 'Auth::login');
+$routes->post('/loginAuth', 'Auth::loginAuth');
+$routes->get('/register', 'Auth::register');
+$routes->post('/registerSave', 'Auth::registerSave');
+$routes->get('/logout', 'Auth::logout');
+
+// Dashboards
+$routes->get('/admin/dashboard', 'Admin::dashboard');
+$routes->get('/faculty/dashboard', 'Faculty::dashboard');
+$routes->get('/student/dashboard', 'Student::dashboard');
+
+// Admin dashboard
+$routes->get('admin/dashboard', 'Admin::dashboard');
+
+// Department CRUD
+$routes->get('admin/departments', 'Admin::departments');
+$routes->get('admin/departments/add', 'Admin::addDepartment');
+$routes->post('admin/departments/store', 'Admin::storeDepartment');
+$routes->get('admin/departments/edit/(:num)', 'Admin::editDepartment/$1');
+$routes->post('admin/departments/update/(:num)', 'Admin::updateDepartment/$1');
+$routes->get('admin/departments/delete/(:num)', 'Admin::deleteDepartment/$1');
