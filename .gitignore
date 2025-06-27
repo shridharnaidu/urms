@@ -124,3 +124,18 @@ _modules/*
 
 /results/
 /phpunit*.xml
+
+
+# CodeIgniter 4 Ignore List
+
+/writable/*
+!/writable/index.html
+
+.env
+/vendor/
+.idea/
+*.log
+*.sql
+*.zip
+*.bak
+node_modules/
