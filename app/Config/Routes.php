@@ -18,6 +18,13 @@ $routes->get('/logout', 'Auth::logout');
 $routes->get('/admin/dashboard', 'Admin::dashboard');
 $routes->get('/faculty/dashboard', 'Faculty::dashboard');
 $routes->get('/student/dashboard', 'Student::dashboard');
+$routes->get('/', 'Auth::login');
+$routes->get('/login', 'Auth::login');
+$routes->post('/loginAuth', 'Auth::loginAuth');
+$routes->get('/register', 'Auth::register');
+$routes->post('/registerSave', 'Auth::registerSave');
+$routes->get('/logout', 'Auth::logout');
+
 
 // Admin dashboard
 $routes->get('admin/dashboard', 'Admin::dashboard');
