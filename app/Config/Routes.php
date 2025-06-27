@@ -53,3 +53,15 @@ $routes->post('admin/semesters/store', 'Admin::storeSemester');
 $routes->get('admin/semesters/edit/(:num)', 'Admin::editSemester/$1');
 $routes->post('admin/semesters/update/(:num)', 'Admin::updateSemester/$1');
 $routes->get('admin/semesters/delete/(:num)', 'Admin::deleteSemester/$1');
+
+// --- Student Management (Admin Panel) ---
+$routes->group('admin/students', ['filter' => 'auth'], function($routes) {
+    $routes->get('/', 'AdminStudentController::index');                 // List all students
+    $routes->get('create', 'AdminStudentController::create');          // Show registration form
+    $routes->post('store', 'AdminStudentController::store');           // Handle form submission
+
+    $routes->get('edit/(:num)', 'AdminStudentController::edit/$1');    // Edit form
+    $routes->post('update/(:num)', 'AdminStudentController::update/$1'); // Handle update
+
+    $routes->get('delete/(:num)', 'AdminStudentController::delete/$1'); // Delete student
+});
