@@ -29,3 +29,11 @@ $routes->post('admin/departments/store', 'Admin::storeDepartment');
 $routes->get('admin/departments/edit/(:num)', 'Admin::editDepartment/$1');
 $routes->post('admin/departments/update/(:num)', 'Admin::updateDepartment/$1');
 $routes->get('admin/departments/delete/(:num)', 'Admin::deleteDepartment/$1');
+
+// Courses CRUD
+$routes->get('admin/courses', 'Admin::courses');
+$routes->get('admin/courses/add', 'Admin::addCourse');
+$routes->post('admin/courses/store', 'Admin::storeCourse');
+$routes->get('admin/courses/edit/(:num)', 'Admin::editCourse/$1');
+$routes->post('admin/courses/update/(:num)', 'Admin::updateCourse/$1');
+$routes->get('admin/courses/delete/(:num)', 'Admin::deleteCourse/$1');

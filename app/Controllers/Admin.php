@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\DepartmentModel;
 use App\Models\CourseModel;
 use App\Models\SubjectModel;
+use App\Models\SemesterModel;
 
 class Admin extends BaseController
 {
@@ -54,5 +55,124 @@ class Admin extends BaseController
         return redirect()->to('/admin/departments');
     }
 
-    // Similar for Courses and Subjects (structure only below)
+    // === COURSES ===
+    public function courses()
+    {
+        $model = new CourseModel();
+        $data['courses'] = $model->select('courses.*, departments.name as department')
+                                 ->join('departments', 'departments.id = courses.department_id')
+                                 ->findAll();
+        return view('admin/courses/index', $data);
+    }
+
+    public function addCourse()
+    {
+        $deptModel = new DepartmentModel();
+        $data['departments'] = $deptModel->findAll();
+        return view('admin/courses/create', $data);
+    }
+
+    public function storeCourse()
+    {
+        $model = new CourseModel();
+        $model->save([
+            'name' => $this->request->getPost('name'),
+            'department_id' => $this->request->getPost('department_id')
+        ]);
+        return redirect()->to('/admin/courses');
+    }
+
+    public function editCourse($id)
+    {
+        $model = new CourseModel();
+        $deptModel = new DepartmentModel();
+
+        $data['course'] = $model->find($id);
+        $data['departments'] = $deptModel->findAll();
+
+        return view('admin/courses/edit', $data);
+    }
+
+    public function updateCourse($id)
+    {
+        $model = new CourseModel();
+        $model->update($id, [
+            'name' => $this->request->getPost('name'),
+            'department_id' => $this->request->getPost('department_id')
+        ]);
+        return redirect()->to('/admin/courses');
+    }
+
+    public function deleteCourse($id)
+    {
+        $model = new CourseModel();
+        $model->delete($id);
+        return redirect()->to('/admin/courses');
+    }
+
+    // === SUBJECTS ===
+    public function subjects()
+    {
+        $model = new SubjectModel();
+        $data['subjects'] = $model
+            ->select('subjects.*, courses.name as course, semesters.name as semester')
+            ->join('courses', 'courses.id = subjects.course_id')
+            ->join('semesters', 'semesters.id = subjects.semester_id')
+            ->findAll();
+
+        return view('admin/subjects/index', $data);
+    }
+
+    public function addSubject()
+    {
+        $courseModel = new CourseModel();
+        $semesterModel = new SemesterModel();
+
+        $data['courses'] = $courseModel->findAll();
+        $data['semesters'] = $semesterModel->findAll();
+
+        return view('admin/subjects/create', $data);
+    }
+
+    public function storeSubject()
+    {
+        $model = new SubjectModel();
+        $model->save([
+            'name' => $this->request->getPost('name'),
+            'course_id' => $this->request->getPost('course_id'),
+            'semester_id' => $this->request->getPost('semester_id')
+        ]);
+        return redirect()->to('/admin/subjects');
+    }
+
+    public function editSubject($id)
+    {
+        $model = new SubjectModel();
+        $courseModel = new CourseModel();
+        $semesterModel = new SemesterModel();
+
+        $data['subject'] = $model->find($id);
+        $data['courses'] = $courseModel->findAll();
+        $data['semesters'] = $semesterModel->findAll();
+
+        return view('admin/subjects/edit', $data);
+    }
+
+    public function updateSubject($id)
+    {
+        $model = new SubjectModel();
+        $model->update($id, [
+            'name' => $this->request->getPost('name'),
+            'course_id' => $this->request->getPost('course_id'),
+            'semester_id' => $this->request->getPost('semester_id')
+        ]);
+        return redirect()->to('/admin/subjects');
+    }
+
+    public function deleteSubject($id)
+    {
+        $model = new SubjectModel();
+        $model->delete($id);
+        return redirect()->to('/admin/subjects');
+    }
 }

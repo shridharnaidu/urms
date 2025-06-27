@@ -1,3 +1,4 @@
+<?php
 // /app/Models/SubjectModel.php
 namespace App\Models;
 use CodeIgniter\Model;
