@@ -68,3 +68,10 @@ $routes->group('admin/students', ['filter' => 'auth'], function($routes) {
 
 //student dashboard
 $routes->get('student/dashboard', 'StudentController::dashboard', ['filter' => 'auth']);
+
+//Faculty 
+$routes->group('faculty/marks', ['filter' => 'auth'], function($routes) {
+    $routes->get('create', 'FacultyMarksController::create');
+    $routes->post('store', 'FacultyMarksController::store');
+});
+$routes->get('faculty/dashboard', 'FacultyController::dashboard', ['filter' => 'auth']);
