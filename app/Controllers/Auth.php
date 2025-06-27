@@ -109,4 +109,84 @@ class Auth extends BaseController
         session()->destroy();
         return redirect()->to('/login');
     }
+
+    //Shows the forgot password form.
+        public function forgotPassword()
+    {
+        return view('auth/forgot_password');
+    }
+
+    //Handles email submission and sends reset link with token
+    public function handleForgotPassword()
+{
+    $email = $this->request->getPost('email');
+    $model = new UserModel();
+    $user = $model->where('email', $email)->first();
+
+    if (!$user) {
+        return redirect()->back()->with('error', 'Email not found.');
+    }
+
+    // Generate a secure token
+    $token = bin2hex(random_bytes(32));
+    $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+    // Store token in DB
+    $model->update($user['id'], [
+        'reset_token' => $token,
+        'token_expires' => $expires
+    ]);
+
+    // Build reset link
+    $link = base_url("reset-password/$token");
+
+    // TODO: Send email - for now, just show it on screen
+    return redirect()->to('/forgot-password')->with('message', "Reset link: <a href='$link'>$link</a>");
+}
+
+//Show reset form if token is valid.
+public function resetPassword($token)
+{
+    $model = new UserModel();
+    $user = $model->where('reset_token', $token)
+                  ->where('token_expires >=', date('Y-m-d H:i:s'))
+                  ->first();
+
+    if (!$user) {
+        return redirect()->to('/login')->with('error', 'Invalid or expired token.');
+    }
+
+    return view('auth/reset_password', ['token' => $token]);
+}
+
+//Save new password in DB and clear token
+public function saveNewPassword($token)
+{
+    $model = new UserModel();
+    $user = $model->where('reset_token', $token)
+                  ->where('token_expires >=', date('Y-m-d H:i:s'))
+                  ->first();
+
+    if (!$user) {
+        return redirect()->to('/login')->with('error', 'Invalid or expired token.');
+    }
+
+    $rules = ['password' => 'required|min_length[4]'];
+    if (!$this->validate($rules)) {
+        return view('auth/reset_password', [
+            'token' => $token,
+            'validation' => $this->validator
+        ]);
+    }
+
+    $model->update($user['id'], [
+        'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+        'reset_token' => null,
+        'token_expires' => null
+    ]);
+
+    return redirect()->to('/login')->with('success', 'Password reset successful. Please log in.');
+}
+
+
 }

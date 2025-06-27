@@ -90,3 +90,9 @@ $routes->get('faculty/marks/index', 'FacultyMarksController::index', ['filter' =
 //marks import
 $routes->get('faculty/marks/import', 'FacultyMarksController::importView');
 $routes->post('faculty/marks/importExcel', 'FacultyMarksController::importExcel');
+
+//forget password
+$routes->get('forgot-password', 'Auth::forgotPassword');
+$routes->post('forgot-password', 'Auth::handleForgotPassword');
+$routes->get('reset-password/(:segment)', 'Auth::resetPassword/$1');
+$routes->post('reset-password/(:segment)', 'Auth::saveNewPassword/$1');
