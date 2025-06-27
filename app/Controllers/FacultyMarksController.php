@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Models\MarksModel;
 use App\Models\StudentModel;
 use App\Models\SubjectModel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class FacultyMarksController extends BaseController
 {
@@ -121,6 +122,48 @@ class FacultyMarksController extends BaseController
 
         return view('faculty/marks/index', ['marks' => $marks]);
     }
+
+
+    public function importExcel()
+    {
+        $file = $this->request->getFile('file');
+
+        if ($file && $file->isValid() && $file->getExtension() === 'xlsx') {
+            $spreadsheet = IOFactory::load($file->getTempName());
+            $sheet = $spreadsheet->getActiveSheet()->toArray();
+
+            $marksModel = new MarksModel();
+            $inserted = 0;
+
+            foreach ($sheet as $index => $row) {
+                if ($index === 0) continue; // skip header
+
+                $studentId = $row[0];
+                $subjectId = $row[1];
+                $marks = $row[2];
+                $grade = $this->calculateGrade($marks);
+
+                $marksModel->save([
+                    'student_id'     => $studentId,
+                    'subject_id'     => $subjectId,
+                    'marks_obtained' => $marks,
+                    'grade'          => $grade
+                ]);
+
+                $inserted++;
+            }
+
+            return redirect()->to('/faculty/marks/index')->with('success', "$inserted marks imported successfully.");
+        }
+
+        return redirect()->back()->with('error', 'Invalid file.');
+    }
+
+        public function importView()
+    {
+        return view('faculty/marks/import');
+    }
+
 
 
 }

@@ -5,7 +5,7 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+$routes->get('/', 'AuthController::login');
 
 
 $routes->get('/login', 'Auth::login');
@@ -80,3 +80,6 @@ $routes->group('faculty/marks', ['filter' => 'auth'], function($routes) {
     $routes->post('update/(:num)', 'FacultyMarksController::update/$1');
 });
 $routes->get('faculty/marks/index', 'FacultyMarksController::index', ['filter' => 'auth']);
+//marks import
+$routes->get('faculty/marks/import', 'FacultyMarksController::importView');
+$routes->post('faculty/marks/importExcel', 'FacultyMarksController::importExcel');
