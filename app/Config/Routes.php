@@ -96,3 +96,22 @@ $routes->get('forgot-password', 'Auth::forgotPassword');
 $routes->post('forgot-password', 'Auth::handleForgotPassword');
 $routes->get('reset-password/(:segment)', 'Auth::resetPassword/$1');
 $routes->post('reset-password/(:segment)', 'Auth::saveNewPassword/$1');
+
+//filters
+// Protected routes
+$routes->group('admin', ['filter' => 'auth:admin'], function($routes) {
+    $routes->get('dashboard', 'Admin::dashboard');
+    // Add other admin routes here
+});
+
+$routes->group('faculty', ['filter' => 'auth:faculty'], function($routes) {
+    $routes->get('dashboard', 'Faculty::dashboard');
+    $routes->get('marks/create', 'FacultyMarksController::create');
+    $routes->post('marks/store', 'FacultyMarksController::store');
+    // etc.
+});
+
+$routes->group('student', ['filter' => 'auth:student'], function($routes) {
+    $routes->get('dashboard', 'Student::dashboard');
+    // Add student routes here
+});
