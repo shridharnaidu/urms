@@ -75,3 +75,8 @@ $routes->group('faculty/marks', ['filter' => 'auth'], function($routes) {
     $routes->post('store', 'FacultyMarksController::store');
 });
 $routes->get('faculty/dashboard', 'FacultyController::dashboard', ['filter' => 'auth']);
+$routes->group('faculty/marks', ['filter' => 'auth'], function($routes) {
+    $routes->get('edit/(:num)', 'FacultyMarksController::edit/$1');
+    $routes->post('update/(:num)', 'FacultyMarksController::update/$1');
+});
+$routes->get('faculty/marks/index', 'FacultyMarksController::index', ['filter' => 'auth']);

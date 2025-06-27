@@ -8,15 +8,33 @@ use App\Models\SubjectModel;
 class FacultyMarksController extends BaseController
 {
     public function create()
-    {
-        $subjectModel = new SubjectModel();
-        $studentModel = new StudentModel();
+{
+    $facultyId = session()->get('id');
 
-        $data['subjects'] = $subjectModel->findAll(); // Optional: filter by faculty_id
-        $data['students'] = $studentModel->findAll(); // Optional: filter by subject/course
+    // Load only subjects assigned to the logged-in faculty
+    $subjectModel = new SubjectModel();
+    $data['subjects'] = $subjectModel->where('faculty_id', $facultyId)->findAll();
 
-        return view('faculty/marks/create', $data);
+    $data['students'] = [];
+
+    // Optional pre-selected subject
+    $subjectId = $this->request->getGet('subject');
+    if ($subjectId) {
+        // Get subject to find course_id & semester_id
+        $subject = $subjectModel->find($subjectId);
+        if ($subject) {
+            $studentModel = new StudentModel();
+            $data['students'] = $studentModel
+                ->where('course_id', $subject['course_id'])
+                ->where('semester_id', $subject['semester_id'])
+                ->findAll();
+        }
+        $data['selected_subject'] = $subjectId;
     }
+
+    return view('faculty/marks/create', $data);
+}
+
 
     public function store()
     {
@@ -44,4 +62,65 @@ class FacultyMarksController extends BaseController
         if ($marks >= 40) return 'D';
         return 'F';
     }
+
+    public function edit($id)
+    {
+        $marksModel = new MarksModel();
+        $mark = $marksModel->find($id);
+
+        if (!$mark) {
+            return redirect()->back()->with('error', 'Mark not found');
+        }
+
+        $studentModel = new StudentModel();
+        $subjectModel = new SubjectModel();
+
+        $student = $studentModel->find($mark['student_id']);
+        $subject = $subjectModel->find($mark['subject_id']);
+
+        return view('faculty/marks/edit', [
+            'mark'    => $mark,
+            'student' => $student,
+            'subject' => $subject
+        ]);
+    }
+
+    public function update($id)
+    {
+        $marksModel = new MarksModel();
+        $mark = $marksModel->find($id);
+
+        if (!$mark) {
+            return redirect()->back()->with('error', 'Mark not found');
+        }
+
+        $marks = $this->request->getPost('marks_obtained');
+        $grade = $this->calculateGrade($marks);
+
+        $marksModel->update($id, [
+            'marks_obtained' => $marks,
+            'grade'          => $grade
+        ]);
+
+        return redirect()->to('/faculty/marks/index')->with('success', 'Marks updated successfully!');
+    }
+
+    public function index()
+    {
+        $facultyId = session()->get('id');
+
+        $marksModel = new MarksModel();
+
+        $marks = $marksModel
+            ->select('marks.*, students.name as student_name, students.roll_no, subjects.name as subject_name')
+            ->join('students', 'students.id = marks.student_id')
+            ->join('subjects', 'subjects.id = marks.subject_id')
+            ->where('subjects.faculty_id', $facultyId)
+            ->orderBy('marks.id', 'DESC')
+            ->findAll();
+
+        return view('faculty/marks/index', ['marks' => $marks]);
+    }
+
+
 }
