@@ -65,3 +65,6 @@ $routes->group('admin/students', ['filter' => 'auth'], function($routes) {
 
     $routes->get('delete/(:num)', 'AdminStudentController::delete/$1'); // Delete student
 });
+
+//student dashboard
+$routes->get('student/dashboard', 'StudentController::dashboard', ['filter' => 'auth']);
