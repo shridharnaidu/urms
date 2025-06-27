@@ -12,8 +12,21 @@ class Admin extends BaseController
 {
     public function dashboard()
     {
-        return view('admin/dashboard');
+        $departmentModel = new \App\Models\DepartmentModel();
+        $courseModel = new \App\Models\CourseModel();
+        $semesterModel = new \App\Models\SemesterModel();
+        $subjectModel = new \App\Models\SubjectModel();
+
+        $data = [
+            'departmentCount' => $departmentModel->countAll(),
+            'courseCount'     => $courseModel->countAll(),
+            'semesterCount'   => $semesterModel->countAll(),
+            'subjectCount'    => $subjectModel->countAll()
+        ];
+
+        return view('admin/dashboard', $data);
     }
+
 
     // === DEPARTMENTS ===
     public function departments()
