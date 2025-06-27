@@ -45,3 +45,11 @@ $routes->post('admin/subjects/store', 'Admin::storeSubject');
 $routes->get('admin/subjects/edit/(:num)', 'Admin::editSubject/$1');
 $routes->post('admin/subjects/update/(:num)', 'Admin::updateSubject/$1');
 $routes->get('admin/subjects/delete/(:num)', 'Admin::deleteSubject/$1');
+
+// Semester CRUD
+$routes->get('admin/semesters', 'Admin::semesters');
+$routes->get('admin/semesters/add', 'Admin::addSemester');
+$routes->post('admin/semesters/store', 'Admin::storeSemester');
+$routes->get('admin/semesters/edit/(:num)', 'Admin::editSemester/$1');
+$routes->post('admin/semesters/update/(:num)', 'Admin::updateSemester/$1');
+$routes->get('admin/semesters/delete/(:num)', 'Admin::deleteSemester/$1');

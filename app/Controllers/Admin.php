@@ -7,6 +7,7 @@ use App\Models\CourseModel;
 use App\Models\SubjectModel;
 use App\Models\SemesterModel;
 
+
 class Admin extends BaseController
 {
     public function dashboard()
@@ -175,4 +176,62 @@ class Admin extends BaseController
         $model->delete($id);
         return redirect()->to('/admin/subjects');
     }
+
+    // === SEMESTERS ===
+    public function semesters()
+    {
+        $model = new SemesterModel();
+        $data['semesters'] = $model
+            ->select('semesters.*, courses.name as course')
+            ->join('courses', 'courses.id = semesters.course_id')
+            ->findAll();
+
+        return view('admin/semesters/index', $data);
+    }
+
+    public function addSemester()
+    {
+        $courseModel = new CourseModel();
+        $data['courses'] = $courseModel->findAll();
+        return view('admin/semesters/create', $data);
+    }
+
+    public function storeSemester()
+    {
+        $model = new SemesterModel();
+        $model->save([
+            'name' => $this->request->getPost('name'),
+            'course_id' => $this->request->getPost('course_id')
+        ]);
+        return redirect()->to('/admin/semesters');
+    }
+
+    public function editSemester($id)
+    {
+        $model = new SemesterModel();
+        $courseModel = new CourseModel();
+
+        $data['semester'] = $model->find($id);
+        $data['courses'] = $courseModel->findAll();
+
+        return view('admin/semesters/edit', $data);
+    }
+
+    public function updateSemester($id)
+    {
+        $model = new SemesterModel();
+        $model->update($id, [
+            'name' => $this->request->getPost('name'),
+            'course_id' => $this->request->getPost('course_id')
+        ]);
+        return redirect()->to('/admin/semesters');
+    }
+
+    public function deleteSemester($id)
+    {
+        $model = new SemesterModel();
+        $model->delete($id);
+        return redirect()->to('/admin/semesters');
+    }
+
 }
