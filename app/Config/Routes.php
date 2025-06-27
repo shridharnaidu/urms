@@ -37,3 +37,11 @@ $routes->post('admin/courses/store', 'Admin::storeCourse');
 $routes->get('admin/courses/edit/(:num)', 'Admin::editCourse/$1');
 $routes->post('admin/courses/update/(:num)', 'Admin::updateCourse/$1');
 $routes->get('admin/courses/delete/(:num)', 'Admin::deleteCourse/$1');
+
+// Subject CRUD
+$routes->get('admin/subjects', 'Admin::subjects');
+$routes->get('admin/subjects/add', 'Admin::addSubject');
+$routes->post('admin/subjects/store', 'Admin::storeSubject');
+$routes->get('admin/subjects/edit/(:num)', 'Admin::editSubject/$1');
+$routes->post('admin/subjects/update/(:num)', 'Admin::updateSubject/$1');
+$routes->get('admin/subjects/delete/(:num)', 'Admin::deleteSubject/$1');
