@@ -30,26 +30,18 @@ class Auth extends BaseController
     $user = $model->where('email', $email)->first();
 
     if ($user) {
-        // Debug output (remove after fixing)
-        echo "<pre>";
-        echo "Entered Email: " . $email . "\n";
-        echo "Entered Password: " . $password . "\n";
-        echo "Stored Hash: " . $user['password'] . "\n";
-        echo "Verify: " . (password_verify($password, $user['password']) ? '✔ Match' : '✘ No Match');
-        echo "</pre>";
-        exit;
-
+        // ✅ Check password
         if (password_verify($password, $user['password'])) {
             $sessionData = [
-                'id'        => $user['id'],
-                'name'      => $user['name'],
-                'email'     => $user['email'],
-                'role'      => $user['role'],
+                'id'         => $user['id'],
+                'name'       => $user['name'],
+                'email'      => $user['email'],
+                'role'       => $user['role'],
                 'isLoggedIn' => true,
             ];
             $session->set($sessionData);
 
-            // Role-based redirect
+            // ✅ Redirect by role
             switch ($user['role']) {
                 case 'admin':
                     return redirect()->to('/admin/dashboard');
@@ -62,14 +54,17 @@ class Auth extends BaseController
                     return redirect()->to('/login');
             }
         } else {
+            // ❌ Password mismatch
             $session->setFlashdata('error', 'Invalid password');
             return redirect()->to('/login');
         }
     } else {
+        // ❌ Email not found
         $session->setFlashdata('error', 'Email not found');
         return redirect()->to('/login');
     }
 }
+
 
 
     /**

@@ -7,7 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Auth::login');
 
-
+// Auth routes
 $routes->get('/login', 'Auth::login');
 $routes->post('/loginAuth', 'Auth::loginAuth');
 $routes->get('/register', 'Auth::register');
@@ -24,6 +24,24 @@ $routes->post('/loginAuth', 'Auth::loginAuth');
 $routes->get('/register', 'Auth::register');
 $routes->post('/registerSave', 'Auth::registerSave');
 $routes->get('/logout', 'Auth::logout');
+
+// Protected dashboards
+$routes->group('admin', ['filter' => 'auth:admin'], function($routes) {
+    $routes->get('dashboard', 'Admin::dashboard');
+    // Add admin routes here
+});
+
+$routes->group('faculty', ['filter' => 'auth:faculty'], function($routes) {
+    $routes->get('dashboard', 'Faculty::dashboard');
+    $routes->get('marks/create', 'FacultyMarksController::create');
+    $routes->post('marks/store', 'FacultyMarksController::store');
+    // Add other faculty routes here
+});
+
+$routes->group('student', ['filter' => 'auth:student'], function($routes) {
+    $routes->get('dashboard', 'Student::dashboard');
+    // Add other student routes here
+});
 
 
 // Admin dashboard
@@ -97,24 +115,6 @@ $routes->post('forgot-password', 'Auth::handleForgotPassword');
 $routes->get('reset-password/(:segment)', 'Auth::resetPassword/$1');
 $routes->post('reset-password/(:segment)', 'Auth::saveNewPassword/$1');
 
-//filters
-// Protected routes
-$routes->group('admin', ['filter' => 'auth:admin'], function($routes) {
-    $routes->get('dashboard', 'Admin::dashboard');
-    // Add other admin routes here
-});
-
-$routes->group('faculty', ['filter' => 'auth:faculty'], function($routes) {
-    $routes->get('dashboard', 'Faculty::dashboard');
-    $routes->get('marks/create', 'FacultyMarksController::create');
-    $routes->post('marks/store', 'FacultyMarksController::store');
-    // etc.
-});
-
-$routes->group('student', ['filter' => 'auth:student'], function($routes) {
-    $routes->get('dashboard', 'Student::dashboard');
-    // Add student routes here
-});
 
 
 $routes->get('create-admin', 'Auth::createAdmin');
