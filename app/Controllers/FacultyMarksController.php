@@ -12,29 +12,27 @@ class FacultyMarksController extends BaseController
 {
     $facultyId = session()->get('id');
 
-    // Load only subjects assigned to the logged-in faculty
-    $subjectModel = new SubjectModel();
+    // Load subjects assigned to the logged-in faculty
+    $subjectModel = new \App\Models\SubjectModel();
     $data['subjects'] = $subjectModel->where('faculty_id', $facultyId)->findAll();
 
     $data['students'] = [];
+    $data['selected_subject'] = null;
 
-    // Optional pre-selected subject
+    // If a subject is selected, fetch its students
     $subjectId = $this->request->getGet('subject');
     if ($subjectId) {
-        // Get subject to find course_id & semester_id
         $subject = $subjectModel->find($subjectId);
         if ($subject) {
-            $studentModel = new StudentModel();
-            $data['students'] = $studentModel
-                ->where('course_id', $subject['course_id'])
-                ->where('semester_id', $subject['semester_id'])
-                ->findAll();
+            $studentModel = new \App\Models\StudentModel();
+            $data['students'] = $studentModel->getStudentsBySubject($subject);
+            $data['selected_subject'] = $subjectId;
         }
-        $data['selected_subject'] = $subjectId;
     }
 
     return view('faculty/marks/create', $data);
 }
+
 
 
     public function store()

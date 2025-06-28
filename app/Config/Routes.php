@@ -115,3 +115,6 @@ $routes->group('student', ['filter' => 'auth:student'], function($routes) {
     $routes->get('dashboard', 'Student::dashboard');
     // Add student routes here
 });
+
+
+$routes->get('create-admin', 'Auth::createAdmin');

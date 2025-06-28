@@ -19,48 +19,58 @@ class Auth extends BaseController
     /**
      * Handle login form submission
      */
-    public function loginAuth()
-    {
-        $session = session();
-        $model = new UserModel();
+ public function loginAuth()
+{
+    $session = session();
+    $model = new \App\Models\UserModel();
 
-        $email = $this->request->getPost('email');
-        $password = $this->request->getPost('password');
+    $email = $this->request->getPost('email');
+    $password = $this->request->getPost('password');
 
-        $user = $model->where('email', $email)->first();
+    $user = $model->where('email', $email)->first();
 
-        if ($user) {
-            if (password_verify($password, $user['password'])) {
-                $sessionData = [
-                    'id'        => $user['id'],
-                    'name'      => $user['name'],
-                    'email'     => $user['email'],
-                    'role'      => $user['role'],
-                    'isLoggedIn' => true,
-                ];
-                $session->set($sessionData);
+    if ($user) {
+        // Debug output (remove after fixing)
+        echo "<pre>";
+        echo "Entered Email: " . $email . "\n";
+        echo "Entered Password: " . $password . "\n";
+        echo "Stored Hash: " . $user['password'] . "\n";
+        echo "Verify: " . (password_verify($password, $user['password']) ? '✔ Match' : '✘ No Match');
+        echo "</pre>";
+        exit;
 
-                // ✅ Redirect based on role
-                switch ($user['role']) {
-                    case 'admin':
-                        return redirect()->to('/admin/dashboard');
-                    case 'faculty':
-                        return redirect()->to('/faculty/dashboard');
-                    case 'student':
-                        return redirect()->to('/student/dashboard');
-                    default:
-                        $session->setFlashdata('error', 'Invalid role assigned.');
-                        return redirect()->to('/login');
-                }
-            } else {
-                $session->setFlashdata('error', 'Invalid password');
-                return redirect()->to('/login');
+        if (password_verify($password, $user['password'])) {
+            $sessionData = [
+                'id'        => $user['id'],
+                'name'      => $user['name'],
+                'email'     => $user['email'],
+                'role'      => $user['role'],
+                'isLoggedIn' => true,
+            ];
+            $session->set($sessionData);
+
+            // Role-based redirect
+            switch ($user['role']) {
+                case 'admin':
+                    return redirect()->to('/admin/dashboard');
+                case 'faculty':
+                    return redirect()->to('/faculty/dashboard');
+                case 'student':
+                    return redirect()->to('/student/dashboard');
+                default:
+                    $session->setFlashdata('error', 'Invalid role assigned.');
+                    return redirect()->to('/login');
             }
         } else {
-            $session->setFlashdata('error', 'Email not found');
+            $session->setFlashdata('error', 'Invalid password');
             return redirect()->to('/login');
         }
+    } else {
+        $session->setFlashdata('error', 'Email not found');
+        return redirect()->to('/login');
     }
+}
+
 
     /**
      * Show registration form
@@ -187,6 +197,28 @@ public function saveNewPassword($token)
 
     return redirect()->to('/login')->with('success', 'Password reset successful. Please log in.');
 }
+
+public function createAdmin()
+{
+    $model = new \App\Models\UserModel();
+
+    $data = [
+        'name'     => 'Super Admin',
+        'email'    => 'admin@urms.com',
+        'password' => password_hash('admin123', PASSWORD_DEFAULT),
+        'role'     => 'admin',
+        'created_at' => date('Y-m-d H:i:s'),
+    ];
+
+    // Check if already exists
+    if (!$model->where('email', 'admin@urms.com')->first()) {
+        $model->save($data);
+        return "✅ Admin user created. Email: admin@urms.com | Password: admin123";
+    }
+
+    return "ℹ️ Admin user already exists.";
+}
+
 
 
 }
