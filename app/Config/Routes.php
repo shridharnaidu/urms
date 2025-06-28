@@ -115,6 +115,10 @@ $routes->post('forgot-password', 'Auth::handleForgotPassword');
 $routes->get('reset-password/(:segment)', 'Auth::resetPassword/$1');
 $routes->post('reset-password/(:segment)', 'Auth::saveNewPassword/$1');
 
-
-
 $routes->get('create-admin', 'Auth::createAdmin');
+
+//download an Excel file
+$routes->get('export-students', 'ExcelController::exportStudents');
+$routes->post('import-students', 'ExcelController::importStudents');
+$routes->get('download-student-template', 'ExcelController::downloadStudentTemplate');
+
