@@ -8,6 +8,7 @@
   <!-- Bootstrap CSS -->
   <link href="<?= base_url('assets/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">
   <link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"> <!-- Bootstrap Icons -->
 </head>
 <body>
 
@@ -17,7 +18,7 @@
   <div class="container-fluid">
     <div class="row">
       <!-- Sidebar -->
-      <div class="col-md-3 col-lg-2 bg-light min-vh-100 p-0">
+      <div class="col-md-3 col-lg-2 bg-dark text-white p-0">
         <?= view('layout/sidebar') ?>
       </div>
 
