@@ -7,28 +7,32 @@ use App\Models\MarksModel;
 class StudentController extends BaseController
 {
     public function dashboard()
-    {
-        $userId = session()->get('id'); // or whatever your session user ID is
+{
+    $userId = session()->get('id');
+    $studentModel = new \App\Models\StudentModel();
+    $marksModel = new \App\Models\MarksModel();
 
-        $studentModel = new StudentModel();
-        $marksModel = new MarksModel();
+    $student = $studentModel
+                ->select('students.*, departments.name as department_name, semesters.name as semester_name')
+                ->join('departments', 'departments.id = students.department_id')
+                ->join('semesters', 'semesters.id = students.semester_id')
+                ->where('students.user_id', $userId)
+                ->first();
 
-        $student = $studentModel
-                    ->select('students.*, courses.name AS course_name, semesters.name AS semester_name')
-                    ->join('courses', 'courses.id = students.course_id')
-                    ->join('semesters', 'semesters.id = students.semester_id')
-                    ->where('students.user_id', $userId)
-                    ->first();
-
-        $results = $marksModel
-                    ->select('marks.*, subjects.name as subject_name')
-                    ->join('subjects', 'subjects.id = marks.subject_id')
-                    ->where('marks.student_id', $student['id'])
-                    ->findAll();
-
-        return view('student/dashboard', [
-            'student' => $student,
-            'results' => $results
-        ]);
+    if (!$student) {
+        return redirect()->to('/logout')->with('error', 'Student record not found.');
     }
+
+    $results = $marksModel
+                ->select('marks.*, subjects.name as subject_name')
+                ->join('subjects', 'subjects.id = marks.subject_id')
+                ->where('marks.student_id', $student['id'])
+                ->findAll();
+
+    return view('student/dashboard', [
+        'student' => $student,
+        'results' => $results
+    ]);
+}
+
 }
