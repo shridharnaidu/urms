@@ -9,12 +9,19 @@ class StudentModel extends Model
     protected $table = 'students';
     protected $primaryKey = 'id';
 
+    // Enable automatic timestamps
+    protected $useTimestamps = true;
+
     protected $allowedFields = [
         'roll_no',
         'name',
         'course_id',
         'semester_id',
-        'photo'
+        'photo',
+        'department_id',
+        'user_id',
+        'created_at',
+        'updated_at'
     ];
 
     /**
